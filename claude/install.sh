@@ -39,10 +39,10 @@ if [ -d "$SKILLS_SRC" ]; then
   done
 fi
 
-# Generate claude.json from template + .env
+# Merge mcpServers from template into ~/.claude.json (Claude Code's real config file)
 TEMPLATE="$CLAUDE_SOURCE/claude.json.template"
 ENV_FILE="$(dirname "$DOTFILES_DIR")/.env"
-DEST="$CLAUDE_TARGET/claude.json"
+DEST="$HOME/.claude.json"
 
 if [ -f "$TEMPLATE" ]; then
   if [ -f "$ENV_FILE" ]; then
@@ -60,13 +60,11 @@ if [ -f "$TEMPLATE" ]; then
     echo "WARNING: Unresolved variables in claude.json — check your .env file"
   fi
 
-  if [ -f "$DEST" ] && [ ! -L "$DEST" ]; then
-    mv "$DEST" "${DEST}.backup.$(date +%s)"
-    echo "Backed up existing claude.json"
-  fi
-
-  echo "$generated" > "$DEST"
-  echo "Generated: $DEST from template"
+  # Merge mcpServers into ~/.claude.json using jq (preserves existing keys)
+  updated="$(jq --argjson mcp "$(echo "$generated" | jq '.mcpServers')" \
+    '.mcpServers = $mcp' "$DEST")"
+  echo "$updated" > "$DEST"
+  echo "Merged mcpServers into $DEST"
 else
   echo "No claude.json.template found, skipping MCP config"
 fi

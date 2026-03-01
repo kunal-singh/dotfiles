@@ -28,6 +28,5 @@
     ]
   },
   "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": false,
-  "model": "haiku"
+  "alwaysThinkingEnabled": false
 }

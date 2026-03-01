@@ -8,7 +8,7 @@
 
 ## Code Defaults
 - Prefer explicit over clever.
-- Write tests only when asked or when the task is clearly a logic-heavy function.
+- Write tests only when asked.
 - Don't add comments that restate what the code does. Only comment *why* if non-obvious.
 
 ## Tool Use Discipline

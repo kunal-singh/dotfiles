@@ -1,0 +1,25 @@
+# Terminal compatibility with tmux
+term = xterm-256color
+
+# True color support
+font-family = "MesloLGS NF"
+font-size = 15
+window-padding-x = 8
+window-padding-y = 8
+
+# Shell integration (ghostty auto-disables in tmux to avoid escape pollution)
+shell-integration = detect
+
+# Theme
+theme = dark:Catppuccin Mocha,light:Catppuccin Latte
+
+# Keybinds: unset ghostty's cmd+1-9 so they don't conflict with tmux windows
+keybind = cmd+1=unbind
+keybind = cmd+2=unbind
+keybind = cmd+3=unbind
+keybind = cmd+4=unbind
+keybind = cmd+5=unbind
+keybind = cmd+6=unbind
+keybind = cmd+7=unbind
+keybind = cmd+8=unbind
+keybind = cmd+9=unbind

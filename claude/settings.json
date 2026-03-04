@@ -27,6 +27,17 @@
       "Read(~/.aws/**)"
     ]
   },
+  "enabledPlugins": {
+    "pluginify@kunal-singh-plugins": true
+  },
+  "extraKnownMarketplaces": [
+    {
+      "source": {
+        "source": "github",
+        "repo": "kunal-singh/claude-code-plugins"
+      }
+    }
+  ],
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false
 }

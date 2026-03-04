@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What This Repo Is
 
 A personal dotfiles repo for macOS. It manages two things:
-1. **Claude Code global config** (`claude/`) — CLAUDE.md, settings.json, MCP servers, and skills, installed via symlinks.
+1. **Claude Code global config** (`claude/`) — CLAUDE.md, settings.json, and MCP servers, installed via symlinks.
 2. **Editor tooling** (`editor/`) — Ghostty terminal and tmux configs, installed via symlinks.
 
 ## Install Scripts
@@ -28,8 +28,6 @@ Both scripts are idempotent and back up existing files before overwriting.
 - `CLAUDE.md` → symlinked to `~/.claude/CLAUDE.md` (global instructions for every session)
 - `settings.json` → symlinked to `~/.claude/settings.json` (permissions, env vars)
 - `claude.json.template` → processed with `envsubst` from `~/.env` (at repo root, gitignored), merged into `~/.claude.json` (MCP server config)
-- `skills/` → each subdirectory symlinked individually into `~/.claude/skills/` (symlinking the parent breaks skill discovery)
-
 ### `editor/`
 - `ghostty/config` → symlinked to `~/.config/ghostty/config`
 - `tmux/tmux.conf` → symlinked to `~/.tmux.conf`
@@ -44,7 +42,7 @@ Both scripts are idempotent and back up existing files before overwriting.
 - `memory` — stdio via npx, persists to `~/.claude/memory.jsonl`
 
 ## Adding a New Skill
-Create `claude/skills/<skill-name>/SKILL.md`. Running `./claude/install.sh` will symlink it into `~/.claude/skills/<skill-name>/`.
+Skills are managed via the `kunal-singh-plugins` marketplace (see `kunal-singh/claude-code-plugins`). This repo no longer manages skills directly.
 
 ## Prerequisites
 - macOS, Homebrew

@@ -22,23 +22,6 @@ for file in CLAUDE.md settings.json; do
   fi
 done
 
-# Symlink individual skill directories (symlinking the parent dir breaks discovery)
-SKILLS_SRC="$CLAUDE_SOURCE/skills"
-SKILLS_DEST="$CLAUDE_TARGET/skills"
-if [ -d "$SKILLS_SRC" ]; then
-  mkdir -p "$SKILLS_DEST"
-  for skill_dir in "$SKILLS_SRC"/*/; do
-    skill_name="$(basename "$skill_dir")"
-    dest_skill="$SKILLS_DEST/$skill_name"
-    if [ -d "$dest_skill" ] && [ ! -L "$dest_skill" ]; then
-      mv "$dest_skill" "${dest_skill}.backup.$(date +%s)"
-      echo "Backed up existing skills/$skill_name"
-    fi
-    ln -sfn "$skill_dir" "$dest_skill"
-    echo "Linked: $dest_skill -> $skill_dir"
-  done
-fi
-
 # Merge mcpServers from template into ~/.claude.json (Claude Code's real config file)
 TEMPLATE="$CLAUDE_SOURCE/claude.json.template"
 ENV_FILE="$(dirname "$DOTFILES_DIR")/.env"
@@ -69,5 +52,9 @@ else
   echo "No claude.json.template found, skipping MCP config"
 fi
 
+echo ""
+echo "Plugin marketplace (kunal-singh-plugins) should already be registered."
+echo "Check with: cat ~/.claude/plugins/known_marketplaces.json | grep kunal"
+echo "If missing: /plugin marketplace add kunal-singh-plugins"
 echo ""
 echo "Done. Verify with: ls -la ~/.claude/"

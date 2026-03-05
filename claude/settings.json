@@ -28,16 +28,20 @@
     ]
   },
   "enabledPlugins": {
-    "pluginify@kunal-singh-plugins": true
+    "pluginify@kunal-singh-plugins": true,
+    "hookify@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": [
-    {
+  "extraKnownMarketplaces": {
+    "kunal-singh-plugins": {
       "source": {
         "source": "github",
         "repo": "kunal-singh/claude-code-plugins"
       }
     }
-  ],
+  },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false
 }

@@ -83,6 +83,12 @@ else
   echo "tmux-attach already in $ZSHRC"
 fi
 
+# ── LSP binaries for Claude Code ──────────────────────────────────────────────
+
+echo "==> Installing LSP binaries..."
+npm install -g typescript-language-server typescript
+npm install -g pyright
+
 # ── Done ───────────────────────────────────────────────────────────────────────
 
 echo ""

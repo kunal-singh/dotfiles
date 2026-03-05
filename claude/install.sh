@@ -9,7 +9,7 @@ echo "==> Setting up ~/.claude..."
 mkdir -p "$CLAUDE_TARGET"
 
 # Symlink safe files
-for file in CLAUDE.md settings.json; do
+for file in CLAUDE.md settings.json statusline-command.sh; do
   src="$CLAUDE_SOURCE/$file"
   dest="$CLAUDE_TARGET/$file"
   if [ -f "$src" ]; then

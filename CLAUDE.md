@@ -26,7 +26,8 @@ Both scripts are idempotent and back up existing files before overwriting.
 
 ### `claude/`
 - `CLAUDE.md` → symlinked to `~/.claude/CLAUDE.md` (global instructions for every session)
-- `settings.json` → symlinked to `~/.claude/settings.json` (permissions, env vars)
+- `settings.json` → symlinked to `~/.claude/settings.json` (permissions, env vars, statusLine config)
+- `statusline-command.sh` → symlinked to `~/.claude/statusline-command.sh` (statusLine script: shows cwd, model, context % in Claude Code terminal)
 - `claude.json.template` → processed with `envsubst` from `~/.env` (at repo root, gitignored), merged into `~/.claude.json` (MCP server config)
 ### `editor/`
 - `ghostty/config` → symlinked to `~/.config/ghostty/config`

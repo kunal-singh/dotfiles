@@ -27,13 +27,6 @@ else
   echo "ghostty already installed"
 fi
 
-if ! command -v gum &>/dev/null; then
-  echo "Installing gum..."
-  brew install gum
-else
-  echo "gum already installed: $(gum --version)"
-fi
-
 # ── Helper: symlink with optional backup ──────────────────────────────────────
 
 symlink() {
@@ -89,6 +82,7 @@ if ! grep -q "tmux-attach" "$ZSHRC" 2>/dev/null; then
 else
   echo "tmux-attach already in $ZSHRC"
 fi
+
 
 # ── LSP binaries for Claude Code ──────────────────────────────────────────────
 

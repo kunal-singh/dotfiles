@@ -20,3 +20,25 @@
 - Use markdown only when the output is documentation. Plain text for answers.
 - For multi-step plans, use numbered steps. No nested bullets.
 - Keep responses short. I am an expert, skip the basics.
+
+## Memory Protocol
+
+### Session Start
+- Call `mcp__memory__search_nodes` with the current task topic before starting work
+- Do NOT load the full graph — search only for relevant entities
+
+### During Session
+Save to MCP memory (without asking) when:
+- An architecture or tech stack decision is made
+- A bug is fixed after non-trivial debugging (include what failed + why)
+- A pattern or convention is established for this project
+
+Do NOT save to MCP memory:
+- Things already in CLAUDE.md (no duplication)
+- Transient outputs (generated code, file contents)
+- Anything auto memory already captures (build commands, preferences)
+
+### Ownership Boundaries
+- CLAUDE.md owns: hard rules, conventions, things that must never change
+- MCP memory owns: decisions with reasoning, cross-session history, "why we did X"
+- Auto memory (MEMORY.md) owns: patterns Claude observed — leave it alone, don't manually duplicate into MCP

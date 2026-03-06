@@ -27,6 +27,13 @@ else
   echo "ghostty already installed"
 fi
 
+if ! command -v gum &>/dev/null; then
+  echo "Installing gum..."
+  brew install gum
+else
+  echo "gum already installed: $(gum --version)"
+fi
+
 # ── Helper: symlink with optional backup ──────────────────────────────────────
 
 symlink() {

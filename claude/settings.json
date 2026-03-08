@@ -28,6 +28,19 @@
       "Read(~/.aws/**)"
     ]
   },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/scripts/hooks/post-edit-quality-gate.js"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
@@ -56,11 +69,5 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": false,
-  "model": "haiku",
-  "hooks": {
-    "PostToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/post-edit-quality-gate.js" }] }
-    ]
-  }
+  "alwaysThinkingEnabled": false
 }

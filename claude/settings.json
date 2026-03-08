@@ -57,5 +57,10 @@
   },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false,
-  "model": "haiku"
+  "model": "haiku",
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node ~/.claude/scripts/hooks/post-edit-quality-gate.js" }] }
+    ]
+  }
 }

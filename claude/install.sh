@@ -22,6 +22,12 @@ for file in CLAUDE.md settings.json statusline-command.sh; do
   fi
 done
 
+# Copy hook scripts and lib
+mkdir -p "$CLAUDE_TARGET/scripts/hooks"
+cp "$CLAUDE_SOURCE/scripts/hooks/post-edit-quality-gate.js" "$CLAUDE_TARGET/scripts/hooks/"
+cp -r "$CLAUDE_SOURCE/scripts/hooks/lib" "$CLAUDE_TARGET/scripts/hooks/"
+echo "Copied: hooks (post-edit-quality-gate + lib) -> $CLAUDE_TARGET/scripts/hooks/"
+
 # Merge mcpServers from template into ~/.claude.json (Claude Code's real config file)
 TEMPLATE="$CLAUDE_SOURCE/claude.json.template"
 ENV_FILE="$(dirname "$DOTFILES_DIR")/.env"

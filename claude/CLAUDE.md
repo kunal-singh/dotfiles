@@ -15,6 +15,7 @@
 - Explore before editing. Read relevant files first, don't assume structure.
 - Don't make more than one speculative edit. If uncertain, ask a single focused question.
 - Batch related file reads into one tool call where possible.
+- Prefer Exa AI (mcp__exa__web_search_exa) over WebSearch for all web searches.
 
 ## Output Format
 - Use markdown only when the output is documentation. Plain text for answers.

@@ -38,6 +38,14 @@
             "command": "echo '{\"decision\": \"block\", \"reason\": \"Use mcp__exa__web_search_exa instead of WebSearch.\"}'"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-rm-rf.sh" },
+          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-git-push-main.sh" },
+          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-npm-in-pnpm-project.sh" }
+        ]
       }
     ],
     "PostToolUse": [

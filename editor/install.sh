@@ -83,7 +83,6 @@ else
   echo "tmux-attach already in $ZSHRC"
 fi
 
-
 # ── LSP binaries for Claude Code ──────────────────────────────────────────────
 
 echo "==> Installing LSP binaries..."

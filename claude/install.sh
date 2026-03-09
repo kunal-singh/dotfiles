@@ -60,6 +60,18 @@ else
   echo "No claude.json.template found, skipping MCP config"
 fi
 
+
+# ── CLI tools ─────────────────────────────────────────────────────────────────
+
+for pkg in ripgrep fd jq shellcheck; do
+  if ! brew list "$pkg" &>/dev/null; then
+    echo "Installing $pkg..."
+    brew install "$pkg"
+  else
+    echo "$pkg already installed"
+  fi
+done
+
 echo ""
 echo "Plugin marketplace (kunal-singh-plugins) should already be registered."
 echo "Check with: cat ~/.claude/plugins/known_marketplaces.json | grep kunal"

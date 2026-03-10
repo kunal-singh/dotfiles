@@ -42,10 +42,22 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-no-force-delete.sh" },
-          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-git-push-main.sh" },
-          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-npm-in-pnpm-project.sh" },
-          { "type": "command", "command": "bash ~/.claude/scripts/hooks/pre-bash-block-grep-find.sh" }
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/hooks/pre-bash-no-force-delete.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/hooks/pre-bash-block-git-push-main.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/hooks/pre-bash-block-npm-in-pnpm-project.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/hooks/pre-bash-block-grep-find.sh"
+          }
         ]
       }
     ],
@@ -82,13 +94,25 @@
     "feature-dev@claude-plugins-official": false,
     "explanatory-output-style@claude-plugins-official": false,
     "code-review@claude-plugins-official": false,
-    "context-manager@kunal-singh-plugins": true
+    "context-manager@kunal-singh-plugins": true,
+    "workflow@kunal-singh-plugins": false,
+    "product-manager@kunal-singh-plugins": false,
+    "architect@kunal-singh-plugins": false,
+    "developer@kunal-singh-plugins": false,
+    "frontend-design@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true
   },
   "extraKnownMarketplaces": {
     "kunal-singh-plugins": {
       "source": {
         "source": "github",
         "repo": "kunal-singh/claude-code-plugins"
+      }
+    },
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/skills.git"
       }
     }
   },

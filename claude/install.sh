@@ -61,6 +61,23 @@ else
 fi
 
 
+# Symlink skills into ~/.claude/skills/ (one symlink per skill subdirectory)
+SKILLS_SRC="$CLAUDE_SOURCE/skills"
+SKILLS_DEST="$CLAUDE_TARGET/skills"
+if [ -d "$SKILLS_SRC" ]; then
+  mkdir -p "$SKILLS_DEST"
+  for skill_dir in "$SKILLS_SRC"/*/; do
+    skill_name="$(basename "$skill_dir")"
+    dest_link="$SKILLS_DEST/$skill_name"
+    if [ -d "$dest_link" ] && [ ! -L "$dest_link" ]; then
+      mv "$dest_link" "${dest_link}.backup.$(date +%s)"
+      echo "Backed up existing skill: $skill_name"
+    fi
+    ln -sf "$skill_dir" "$dest_link"
+    echo "Linked skill: $dest_link -> $skill_dir"
+  done
+fi
+
 # ── CLI tools ─────────────────────────────────────────────────────────────────
 
 for pkg in ripgrep fd jq shellcheck; do

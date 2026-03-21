@@ -45,6 +45,16 @@ Both scripts are idempotent and back up existing files before overwriting.
 ## Adding a New Skill
 Skills are managed via the `kunal-singh-plugins` marketplace (see `kunal-singh/claude-code-plugins`). This repo no longer manages skills directly.
 
+## Known Hook Limitations
+
+### `pre-bash-block-grep-find.sh`
+
+Blocks `grep` and `find` in Bash tool calls, but has two known bypass vectors:
+
+1. **Subshell commands** — `bash -c 'grep ...'` passes the outer regex check because the hook only matches `grep`/`find` as leading command tokens (preceded by `^`, `|`, `;`, `&`, or whitespace). The word `grep` inside a quoted string argument does not match the anchored pattern.
+
+2. **Self-referential blocking** — any fix that uses `grep -w` to match anywhere in the full string will cause the hook to block itself (e.g. `shellcheck` invoked as `bash ~/.claude/scripts/hooks/pre-bash-block-grep-find.sh` contains "grep" in the path). A proper fix requires using Python's `re` module or another non-grep tool to do the pattern match.
+
 ## Prerequisites
 - macOS, Homebrew
 - `npm install -g @anthropic-ai/claude-code`

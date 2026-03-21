@@ -68,19 +68,20 @@ if [ -d "$SKILLS_SRC" ]; then
   mkdir -p "$SKILLS_DEST"
   for skill_dir in "$SKILLS_SRC"/*/; do
     skill_name="$(basename "$skill_dir")"
+    skill_src="${skill_dir%/}"  # strip trailing slash so ln -sf targets the dir, not inside it
     dest_link="$SKILLS_DEST/$skill_name"
     if [ -d "$dest_link" ] && [ ! -L "$dest_link" ]; then
       mv "$dest_link" "${dest_link}.backup.$(date +%s)"
       echo "Backed up existing skill: $skill_name"
     fi
-    ln -sf "$skill_dir" "$dest_link"
-    echo "Linked skill: $dest_link -> $skill_dir"
+    ln -sfn "$skill_src" "$dest_link"
+    echo "Linked skill: $dest_link -> $skill_src"
   done
 fi
 
 # ── CLI tools ─────────────────────────────────────────────────────────────────
 
-for pkg in ripgrep fd jq shellcheck; do
+for pkg in ripgrep fd jq shellcheck pipx; do
   if ! brew list "$pkg" &>/dev/null; then
     echo "Installing $pkg..."
     brew install "$pkg"
@@ -88,6 +89,19 @@ for pkg in ripgrep fd jq shellcheck; do
     echo "$pkg already installed"
   fi
 done
+
+# Install cocoindex-code for semantic code search MCP
+if ! command -v ccc &>/dev/null; then
+  echo "Installing cocoindex-code..."
+  pipx install cocoindex-code
+else
+  echo "Upgrading cocoindex-code..."
+  pipx upgrade cocoindex-code
+fi
+
+# Install cocoindex-code skill for Claude Code (provides ccc slash commands)
+echo "Installing cocoindex-code skill..."
+npx -y skills add cocoindex-io/cocoindex-code --yes --global
 
 echo ""
 echo "Plugin marketplace (kunal-singh-plugins) should already be registered."

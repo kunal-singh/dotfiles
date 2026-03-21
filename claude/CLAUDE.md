@@ -65,3 +65,27 @@ Do NOT save: things already in CLAUDE.md, transient outputs, anything auto-memor
 - **CLAUDE.md** — hard rules, conventions, things that must never change
 - **MCP memory** — decisions with reasoning, cross-session history, "why we did X"
 - **Auto memory (MEMORY.md)** — patterns Claude observed; leave it alone
+
+## Code Navigation — Tool Priority
+
+### Layer 1: LSP — always prefer for symbol-level queries
+Use LSP operations for all code navigation:
+- goToDefinition  → when asked where X is defined
+- findReferences  → when asked where X is used, called, or imported
+- workspaceSymbol → when searching for a class/function by name
+- diagnostics     → run after EVERY file edit, before moving on
+
+### LSP fallback rule
+Only use Grep/Glob/rg for:
+- Searching string literals, log messages, comments, config values
+- Finding files by path pattern
+- Text that is NOT a code symbol
+Never use Grep/rg to locate function or class definitions.
+
+### Semantic Search — cocoindex-code MCP
+
+Use the cocoindex-code MCP for:
+- Queries by meaning or description ("find where we handle auth errors")
+- Exploring unfamiliar parts of the codebase without knowing exact names
+- Finding similar patterns or related logic across files
+- Anything where LSP requires an exact symbol name you don't have

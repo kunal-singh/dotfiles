@@ -96,5 +96,19 @@ cp ~/dotfiles/.env.example ~/dotfiles/.env
 | context7 | HTTP (remote) | Yes (optional) |
 | sequential-thinking | stdio (npx) | No |
 | memory | stdio (npx) | No |
+| exa | HTTP (remote) | Yes |
+| cocoindex-code | stdio (pipx) | No |
 
 Memory is persisted to `~/.claude/memory.jsonl` across sessions.
+
+### cocoindex-code
+
+Semantic code search using local sentence-transformers (no API key, no cloud). After installing:
+
+```bash
+# In any project you want to search semantically:
+ccc init    # create .cocoindex_code/settings.yml
+ccc index   # build the index
+```
+
+Optional: configure `~/.cocoindex_code/global_settings.yml` to use GPU (`device: mps`) or cloud embeddings (OpenAI, Gemini, etc.).

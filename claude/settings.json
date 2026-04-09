@@ -100,13 +100,13 @@
     "explanatory-output-style@claude-plugins-official": false,
     "code-review@claude-plugins-official": false,
     "context-manager@kunal-singh-plugins": true,
-    "workflow@kunal-singh-plugins": false,
-    "product-manager@kunal-singh-plugins": false,
-    "architect@kunal-singh-plugins": false,
-    "developer@kunal-singh-plugins": false,
-    "frontend-design@claude-plugins-official": true,
+    "workflow@kunal-singh-plugins": true,
+    "product-manager@kunal-singh-plugins": true,
+    "architect@kunal-singh-plugins": true,
+    "developer@kunal-singh-plugins": true,
+    "frontend-design@claude-plugins-official": false,
     "document-skills@anthropic-agent-skills": true,
-    "style-guide@kunal-singh-plugins": false
+    "style-guide@kunal-singh-plugins": true
   },
   "extraKnownMarketplaces": {
     "kunal-singh-plugins": {
@@ -123,6 +123,5 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": false,
-  "model": "haiku"
+  "alwaysThinkingEnabled": false
 }

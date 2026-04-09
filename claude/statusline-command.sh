@@ -13,7 +13,8 @@ stdin_data=$(cat)
 # Single jq call - extract all values at once
 # Prefer pre-calculated remaining_percentage (100 - remaining = used toward compact)
 # Fall back to manual calc from raw tokens if not available
-IFS=$'\t' read -r current_dir model_name cost lines_added lines_removed duration_ms ctx_used cache_pct < <(
+IFS=$'\t' read -r current_dir model_name cost lines_added lines_removed duration_ms ctx_used cache_pct \
+    rate5h_pct rate5h_reset rate7d_pct rate7d_reset < <(
     echo "$stdin_data" | jq -r '[
         .workspace.current_dir // "unknown",
         .model.display_name // "Unknown",
@@ -37,7 +38,11 @@ IFS=$'\t' read -r current_dir model_name cost lines_added lines_removed duration
                 ((.cache_read_input_tokens // 0) * 100 /
                  ((.input_tokens // 0) + (.cache_read_input_tokens // 0))) | floor
             else 0 end
-        ) catch 0)
+        ) catch 0),
+        (try (.rate_limits.five_hour.used_percentage // 0 | floor) catch 0),
+        (try (.rate_limits.five_hour.resets_at // 0) catch 0),
+        (try (.rate_limits.seven_day.used_percentage // 0 | floor) catch 0),
+        (try (.rate_limits.seven_day.resets_at // 0) catch 0)
     ] | @tsv'
 )
 
@@ -51,6 +56,10 @@ if [ -z "$current_dir" ] && [ -z "$model_name" ]; then
     duration_ms=$(echo "$stdin_data" | jq -r '(.cost.total_duration_ms // 0)' 2>/dev/null)
     ctx_used=""
     cache_pct="0"
+    rate5h_pct="0"
+    rate5h_reset="0"
+    rate7d_pct="0"
+    rate7d_reset="0"
     : "${current_dir:=unknown}"
     : "${model_name:=Unknown}"
     : "${cost:=0}"
@@ -125,6 +134,40 @@ else
     session_time=""
 fi
 
+# Format seconds-until-reset into human-readable string
+format_reset() {
+    local epoch=$1
+    local now
+    now=$(date +%s)
+    local secs=$(( epoch - now ))
+    if [ "$secs" -le 0 ]; then
+        echo "now"
+        return
+    fi
+    local days=$(( secs / 86400 ))
+    local hrs=$(( (secs % 86400) / 3600 ))
+    local mins=$(( (secs % 3600) / 60 ))
+    if [ "$days" -gt 0 ]; then
+        echo "${days}d ${hrs}h"
+    elif [ "$hrs" -gt 0 ]; then
+        echo "${hrs}h ${mins}m"
+    else
+        echo "${mins}m"
+    fi
+}
+
+# Rate limit color (blue < 70%, magenta 70-89%, red >= 90%)
+rate_color() {
+    local pct=$1
+    if [ "$pct" -ge 90 ]; then
+        printf '\033[31m'
+    elif [ "$pct" -ge 70 ]; then
+        printf '\033[35m'
+    else
+        printf '\033[34m'
+    fi
+}
+
 # Separator
 SEP='\033[2m│\033[0m'
 
@@ -160,6 +203,20 @@ if [ -n "$session_time" ]; then
 fi
 if [ "$cache_pct" -gt 0 ] 2>/dev/null; then
     line2="$line2 $(printf ' \033[2m↻%s%%\033[0m' "$cache_pct")"
+fi
+
+# 5h rate limit
+if [ "${rate5h_pct:-0}" -gt 0 ] 2>/dev/null; then
+    r5_color=$(rate_color "$rate5h_pct")
+    r5_reset=$(format_reset "$rate5h_reset")
+    line2="$line2 $(printf '%b %b5h:%s%%\033[0m \033[2m(%s)\033[0m' "$SEP" "$r5_color" "$rate5h_pct" "$r5_reset")"
+fi
+
+# 7d rate limit
+if [ "${rate7d_pct:-0}" -gt 0 ] 2>/dev/null; then
+    r7_color=$(rate_color "$rate7d_pct")
+    r7_reset=$(format_reset "$rate7d_reset")
+    line2="$line2 $(printf '%b %b7d:%s%%\033[0m \033[2m(%s)\033[0m' "$SEP" "$r7_color" "$rate7d_pct" "$r7_reset")"
 fi
 
 printf '%b\n\n%b' "$line1" "$line2"

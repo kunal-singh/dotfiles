@@ -106,7 +106,8 @@
     "developer@kunal-singh-plugins": true,
     "frontend-design@claude-plugins-official": false,
     "document-skills@anthropic-agent-skills": true,
-    "style-guide@kunal-singh-plugins": true
+    "style-guide@kunal-singh-plugins": true,
+    "superpowers@superpowers-marketplace": true
   },
   "extraKnownMarketplaces": {
     "kunal-singh-plugins": {
@@ -120,8 +121,15 @@
         "source": "git",
         "url": "https://github.com/anthropics/skills.git"
       }
+    },
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
     }
   },
   "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": false
+  "alwaysThinkingEnabled": false,
+  "effortLevel": "xhigh"
 }

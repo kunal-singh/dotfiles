@@ -103,6 +103,18 @@ fi
 echo "Installing cocoindex-code skill..."
 npx -y skills add cocoindex-io/cocoindex-code --yes --global
 
+# Install Matt Pocock's engineering skills (triage, to-prd, prototype, etc.).
+# Excludes tdd/diagnose/review/write-a-skill — the Superpowers plugin already
+# provides test-driven-development/systematic-debugging/*-code-review/writing-skills,
+# so we keep one copy of each capability.
+echo "Installing Matt Pocock skills..."
+npx -y skills add mattpocock/skills --global --agent claude-code --yes --skill \
+  caveman design-an-interface edit-article git-guardrails-claude-code grill-me \
+  grill-with-docs handoff improve-codebase-architecture migrate-to-shoehorn \
+  obsidian-vault prototype qa request-refactor-plan scaffold-exercises \
+  setup-matt-pocock-skills setup-pre-commit teach to-issues to-prd triage \
+  ubiquitous-language writing-beats writing-fragments writing-shape zoom-out
+
 echo ""
 echo "Plugin marketplace (kunal-singh-plugins) should already be registered."
 echo "Check with: cat ~/.claude/plugins/known_marketplaces.json | grep kunal"

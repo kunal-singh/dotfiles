@@ -79,6 +79,26 @@ if [ -d "$SKILLS_SRC" ]; then
   done
 fi
 
+# ── workmux status hooks + skills ───────────────────────────────────────────
+# Installs agent status-tracking hooks (into ~/.claude/settings.json — a symlink
+# back into this repo) and the bundled worktree/merge/coordinator skills.
+# `workmux setup` needs a PTY, so wrap it with script(1) and feed the y/n prompt.
+# Idempotent: skips when the workmux hook is already present in settings.json.
+if command -v workmux &>/dev/null; then
+  SETTINGS="$CLAUDE_TARGET/settings.json"
+  if [ -f "$SETTINGS" ] && jq -e '.. | strings | select(test("workmux set-window-status"))' \
+       "$SETTINGS" &>/dev/null; then
+    echo "workmux hooks already configured"
+  else
+    echo "Installing workmux status hooks..."
+    printf 'y\n' | script -q /dev/null workmux setup --hooks >/dev/null
+  fi
+  echo "Installing workmux skills..."
+  printf 'y\n' | script -q /dev/null workmux setup --skills >/dev/null
+else
+  echo "workmux not found on PATH — run editor/install.sh first for status tracking"
+fi
+
 # ── CLI tools ─────────────────────────────────────────────────────────────────
 
 for pkg in ripgrep fd jq shellcheck pipx; do

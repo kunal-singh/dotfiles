@@ -206,14 +206,14 @@ if [ "$cache_pct" -gt 0 ] 2>/dev/null; then
 fi
 
 # 5h rate limit
-if [ "${rate5h_pct:-0}" -gt 0 ] 2>/dev/null; then
+if [ "${rate5h_pct:-0}" -ge 0 ] 2>/dev/null; then
     r5_color=$(rate_color "$rate5h_pct")
     r5_reset=$(format_reset "$rate5h_reset")
     line2="$line2 $(printf '%b %b5h:%s%%\033[0m \033[2m(%s)\033[0m' "$SEP" "$r5_color" "$rate5h_pct" "$r5_reset")"
 fi
 
 # 7d rate limit
-if [ "${rate7d_pct:-0}" -gt 0 ] 2>/dev/null; then
+if [ "${rate7d_pct:-0}" -ge 0 ] 2>/dev/null; then
     r7_color=$(rate_color "$rate7d_pct")
     r7_reset=$(format_reset "$rate7d_reset")
     line2="$line2 $(printf '%b %b7d:%s%%\033[0m \033[2m(%s)\033[0m' "$SEP" "$r7_color" "$rate7d_pct" "$r7_reset")"

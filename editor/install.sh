@@ -27,6 +27,13 @@ else
   echo "ghostty already installed"
 fi
 
+if ! command -v workmux &>/dev/null; then
+  echo "Installing workmux..."
+  brew install raine/workmux/workmux
+else
+  echo "workmux already installed: $(workmux --version)"
+fi
+
 # ── Helper: symlink with optional backup ──────────────────────────────────────
 
 symlink() {
@@ -41,7 +48,8 @@ symlink() {
   fi
 
   if [ -e "$dst" ]; then
-    local backup="${dst}.bak.$(date +%Y%m%d%H%M%S)"
+    local backup
+    backup="${dst}.bak.$(date +%Y%m%d%H%M%S)"
     echo "Backing up existing $dst → $backup"
     mv "$dst" "$backup"
   fi
@@ -74,6 +82,7 @@ echo "Written: $ZSH_SNIPPET"
 # ── Add source line to ~/.zshrc (idempotent) ───────────────────────────────────
 
 ZSHRC="$HOME/.zshrc"
+# shellcheck disable=SC2016  # $HOME must expand at runtime in .zshrc, not at install time
 SOURCE_LINE='[ -f "$HOME/.config/zsh/tmux-attach.zsh" ] && source "$HOME/.config/zsh/tmux-attach.zsh"'
 
 if ! grep -q "tmux-attach" "$ZSHRC" 2>/dev/null; then

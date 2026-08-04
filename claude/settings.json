@@ -79,6 +79,45 @@
             "command": "bash ~/.claude/scripts/hooks/post-write-shellcheck.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status working"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status working"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status waiting"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status done"
+          }
+        ]
       }
     ]
   },
@@ -100,14 +139,16 @@
     "explanatory-output-style@claude-plugins-official": false,
     "code-review@claude-plugins-official": false,
     "context-manager@kunal-singh-plugins": true,
-    "workflow@kunal-singh-plugins": true,
-    "product-manager@kunal-singh-plugins": true,
-    "architect@kunal-singh-plugins": true,
-    "developer@kunal-singh-plugins": true,
+    "workflow@kunal-singh-plugins": false,
+    "product-manager@kunal-singh-plugins": false,
+    "architect@kunal-singh-plugins": false,
+    "developer@kunal-singh-plugins": false,
     "frontend-design@claude-plugins-official": false,
     "document-skills@anthropic-agent-skills": true,
     "style-guide@kunal-singh-plugins": true,
-    "superpowers@superpowers-marketplace": true
+    "superpowers@superpowers-marketplace": true,
+    "skill-creator@claude-plugins-official": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "kunal-singh-plugins": {
@@ -127,9 +168,16 @@
         "source": "github",
         "repo": "obra/superpowers-marketplace"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false,
-  "effortLevel": "xhigh"
+  "effortLevel": "high",
+  "skipWorkflowUsageWarning": true
 }

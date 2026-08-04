@@ -147,7 +147,8 @@
     "document-skills@anthropic-agent-skills": true,
     "style-guide@kunal-singh-plugins": true,
     "superpowers@superpowers-marketplace": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "kunal-singh-plugins": {
@@ -167,10 +168,16 @@
         "source": "github",
         "repo": "obra/superpowers-marketplace"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false,
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "skipWorkflowUsageWarning": true
 }

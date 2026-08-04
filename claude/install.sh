@@ -135,6 +135,18 @@ npx -y skills add mattpocock/skills --global --agent claude-code --yes --skill \
   setup-matt-pocock-skills setup-pre-commit teach to-issues to-prd triage \
   ubiquitous-language writing-beats writing-fragments writing-shape zoom-out
 
+# ── Plugin marketplaces ───────────────────────────────────────────────────────
+# Marketplace registrations live in ~/.claude/plugins/known_marketplaces.json,
+# which is machine-local and not tracked here — so re-register on each install.
+# Enabled/disabled state persists via settings.json (symlinked into this repo).
+# Both subcommands are non-interactive and no-op when already present.
+
+echo "Registering plugin marketplaces..."
+claude plugin marketplace add DietrichGebert/ponytail || \
+  echo "WARNING: could not add ponytail marketplace"
+claude plugin install ponytail@ponytail || \
+  echo "WARNING: could not install ponytail plugin"
+
 echo ""
 echo "Plugin marketplace (kunal-singh-plugins) should already be registered."
 echo "Check with: cat ~/.claude/plugins/known_marketplaces.json | grep kunal"

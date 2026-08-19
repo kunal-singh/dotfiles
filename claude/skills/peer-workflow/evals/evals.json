@@ -1,0 +1,26 @@
+{
+  "skill_name": "peer-workflow",
+  "evals": [
+    {
+      "id": 0,
+      "name": "brief-peers-then-audit",
+      "prompt": "You have two peer agents available: researcher-a and architect-a. I want you to audit how configuration loading works in this project and tell me what's wrong with it. Use the peers.",
+      "expected_output": "Briefs both peers with standing role + named tools BEFORE the first substantive request, sends both in the same turn, grounds in actual file reads first, reports findings with file:line evidence before asking any questions, asks forks in a batch with recommendations.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "verify-contradicting-peer-claim",
+      "prompt": "peer agent architect-b just told me our module has 40+ files that would need changing for this refactor and it's too expensive. researcher-b says the library we'd need is unmaintained. can you check both of those before we drop the idea? you have architect-b and researcher-b available",
+      "expected_output": "Treats both peer claims as unverified evidence, mechanically re-measures the file count itself rather than accepting it, checks the library claim independently or delegates it with a verification framing, corrects any wrong claim plainly, does not defer to peer authority.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "decide-vs-ask-boundary",
+      "prompt": "researcher-c and architect-c are up. small task: pick a logging library for this service and wire it in. don't bother me with questions unless you actually need me.",
+      "expected_output": "Recognizes library choice has a conventional answer and decides it rather than manufacturing a fork; still briefs peers before delegating; only escalates a genuine fork if one exists; does not ask permission for routine judgment calls.",
+      "files": []
+    }
+  ]
+}

@@ -146,6 +146,14 @@ claude plugin marketplace add DietrichGebert/ponytail || \
   echo "WARNING: could not add ponytail marketplace"
 claude plugin install ponytail@ponytail || \
   echo "WARNING: could not install ponytail plugin"
+claude plugin marketplace add cathrynlavery/diagram-design || \
+  echo "WARNING: could not add diagram-design marketplace"
+claude plugin install diagram-design@diagram-design || \
+  echo "WARNING: could not install diagram-design plugin"
+claude plugin marketplace add google/elephant-goldfish-model || \
+  echo "WARNING: could not add egm marketplace"
+claude plugin install egm@egm || \
+  echo "WARNING: could not install egm plugin"
 
 echo ""
 echo "Plugin marketplace (kunal-singh-plugins) should already be registered."

@@ -1,6 +1,6 @@
 ---
 name: peer-workflow
-description: Use this whenever you are the lead session driving a task with named peer agents available — a researcher, an architect, or both. Invoke it BEFORE starting the task, passing the peer agent names (e.g. "researcher-x, architect-x"). It establishes your persona as lead, briefs each peer on their standing role and tools, and installs the protocol for handling the work: ground in evidence, delegate research and review in parallel, decide with the human, verify every peer claim before acting on it. Load it even when the task looks small enough to do alone — the brief is what makes the peers useful, and an unbriefed peer wastes a round. Also load when peers already exist mid-task and you have not yet briefed them, when a peer's report contradicts your own findings, or when you are unsure whether a question is yours or the human's to answer.
+description: Use this whenever you are the lead session driving a task with named peer agents available — a researcher, an architect, a reviewer, or several. Invoke it BEFORE starting the task, passing the peer agent names (e.g. "researcher-x, architect-x"). It establishes your persona as lead, briefs each peer on their standing role and tools, and installs the protocol for handling the work: ground in evidence, delegate research and review in parallel, decide with the human, verify every peer claim before acting on it. Load it even when the task looks small enough to do alone — the brief is what makes the peers useful, and an unbriefed peer wastes a round. Also load when peers already exist mid-task and you have not yet briefed them, when a peer's report contradicts your own findings, or when you are unsure whether a question is yours or the human's to answer. Also load it when running an iterative review loop on a spec or document (a reviewer peer reports rounds, the lead fixes them through helper agents), and when taking over as lead from an earlier session.
 ---
 
 # Working with peer agents
@@ -92,7 +92,34 @@ available in the host:
 > should decide. Do not present preferences as defects. When you estimate cost
 > or blast radius, say how you measured it, so the lead can check the number.
 
-Both briefs deliberately omit *what the task is about*. Send that separately
+### The reviewer brief
+
+Send this when a peer runs formal review rounds on a document (a spec, a plan),
+adapted to the review skills or reviewer agents available in the host:
+
+> You are a review agent. Your job: run the review stages the lead names against
+> the target document, one round at a time, and write each round's report to the
+> review folder as `<stage>_report_r<n>.md`. Your tools of trade are the review
+> skills and reviewer agents available to you. Dispatch them rather than reviewing
+> from general instinct.
+>
+> Do not edit the target. Fixing is the lead's job, and a reviewer who fixes
+> loses the independence that makes the next round meaningful.
+>
+> Each report gives counts by severity (Blocker, Major, Nit), one id per finding
+> with line numbers and evidence, overlaps merged, and a table of earlier-round
+> findings that reopened. Say what no reviewer covered. When a round is done,
+> send the lead the counts and the Blockers only. The report holds the rest.
+
+**Add the host's guardrails to every helper brief.** Hooks and the permission
+classifier block by command text (in one setup: `DROP TABLE`, `rm`, `npm` and
+`find` in a Bash command, or a script run with a secrets file). Name the known
+blocks and the sanctioned route (the Write tool for text that contains a blocked
+word, `trash`, `fd`/`rg`, the repo's package manager), and tell the helper to
+report a denial, never to work around it. An uninformed helper burns its run on
+variants of the blocked command.
+
+All three briefs deliberately omit *what the task is about*. Send that separately
 with the actual request — role and request are different messages doing
 different jobs, and a peer briefed once can serve many requests.
 
@@ -146,6 +173,110 @@ task from re-litigating settled ground.
 **7. Build, then have it reviewed.** After writing anything non-trivial, send it
 to the architect. Review after the fact catches what design review cannot see.
 
+## Running a review loop
+
+Use this when a reviewer peer reviews a document in rounds and you fix each
+round. The split matters. The reviewer reviews, you decide, and helper agents
+apply your decisions. Never run a review stage yourself: the next round is only
+independent if the reviewer did the reviewing.
+
+**Exit rule.** A round is *green* at 0 Blockers and 0 Majors. Nits never block.
+Cap the loop (5 rounds unless the human sets another number). At the cap,
+whatever remains goes to the human as accepted risk for them to rule on; you
+don't run another round.
+
+Each round:
+
+1. **Read only the report.** Don't re-read the whole document to fix a round.
+   Look up the code a finding cites only when the decision depends on it.
+2. **Decide every Major yourself.** Write a decision per finding id, and don't
+   reopen decisions the human already settled. A finding that needs the human
+   is a fork; ask it (protocol step 5) before any helper starts.
+3. **Write one shared decisions file** before briefing anyone. It holds every
+   decision that touches more than one section, in exact final words: error
+   codes, names, signatures, who runs what, which database or env file a
+   command hits. Two helpers that each pick a name will pick different names.
+   Settle cross-section details here, not in the helpers. Also add the editing
+   rules: exact-string edits, stay in your range, re-read and retry if the file
+   changed underneath you, stop and report a decision that cannot be applied
+   rather than improvising, and report in under 15 lines.
+4. **Split the fixes by section, one fresh helper per section.** Each helper
+   reads the shared file, its line range, the findings that target that range,
+   and the code those findings cite. Nothing else, and never the whole
+   document. Aim for under about 150k context. Run at most 2 at a time. Use a
+   cheap model (for example Sonnet) for document edits: the judgment is already
+   in the shared file. Use the strong model only for a design call or a
+   security-sensitive change, and even then make the call yourself first.
+5. **Order helpers by dependency.** A section whose wording must match another
+   section's output runs after it. For example, a deletion list that must quote
+   the build section's final wording waits for the build section's helper.
+6. **On each helper's report:**
+   - **Stop it.** Stop the helper as soon as it reports. Never resume a helper
+     whose context is large; a follow-up gets a new, narrow helper.
+   - **Cross-range follow-ups.** Make the small edits a helper flags outside its
+     range yourself.
+   - **Extensions.** Accept or replace anything the helper had to add. If you
+     change a decision, update the shared file before the next helper starts.
+7. **Sweep before you hand back.** Search the whole document for the phrases the
+   findings called wrong, and check that every new name or code reads the same
+   in every section. This takes seconds and catches what section-scoped helpers
+   cannot see.
+8. **Record the round in the handoff file.** Write what was fixed, and every
+   place you changed a planned decision.
+9. **Hand the next round back to the reviewer.** Send facts only: new entries,
+   decisions you changed, and the range to review. Never write "it's fixed";
+   that is a conclusion, and it anchors the reviewer. Subscribe to the
+   reviewer's idle notice instead of asking whether it is done.
+
+**Hooks enforce part of this.** `scripts/token-guard.py` (in this skill's
+folder) is wired in `~/.claude/settings.json`, not in this skill's frontmatter:
+skill hooks register only once the skill is invoked, and these must fire in
+every session. It handles:
+- **Agent calls without a model:** a reminder to set a cheap model only when
+  the helper's work is mechanical (judgment work, such as a review, may stay on
+  the session model), and to keep its scope narrow.
+- **Resuming a large subagent:** a SendMessage that would resume a subagent
+  with more than 150k of context asks for approval first.
+- **Finished subagents:** each one's call count, cache reads and peak context.
+- **Large lead context:** a prompt that arrives after the lead's context passes
+  80% of the window carries a compaction alert and a nudge to hand off.
+
+Edit the thresholds at the top of the script.
+
+## Handing over to a fresh lead session
+
+A long lead session costs more on every call, because every call re-sends its
+whole context. Keep the state in files, not in the conversation:
+
+- the document;
+- the review reports;
+- the shared decisions files;
+- a handoff file with "start here" steps, the decisions taken, the peers'
+  names and addresses, and what comes next.
+
+When your context grows large (around 400k), or at a milestone, start a fresh
+session from the handoff file.
+
+**The new lead's first act** is to message every peer from the new session. A
+peer replies to the `from` address of the last message it received. Without
+this message, the next report goes to the old session.
+
+## Acting in the human's terminal
+
+When the human lets you drive their pane (`tmux send-keys`), for a step that
+needs their login or 2FA:
+- **Send a script, not a long command.** Write it to the scratchpad, shellcheck
+  it, and send `bash <path>` with `send-keys -l`. Make it stop on the first
+  failure with a line saying what state it left.
+- **Leave stdin to the terminal.** A loop fed by a heredoc steals stdin, so an
+  interactive prompt (npm's 2FA "press ENTER") fails at once (`EOTP`).
+  Redirect each interactive command `</dev/tty`.
+- **Wait on a background watcher, not a poll.** A `run_in_background` loop that
+  reads the pane, presses Enter on a new prompt, and exits on a done marker
+  notifies you when it finishes. Tell the human what to approve in the browser.
+- **Never print a secret.** Write fetched secrets straight to a gitignored
+  file with mode 600 and show only key names.
+
 ## Verifying peer claims
 
 **A peer report is evidence, not truth.** Peers are confident and frequently
@@ -170,6 +301,15 @@ Before you act on a peer claim, or relay it to the human:
   thing the round produced.
 - **Never relay an unverified peer claim as your own finding.** If you are
   passing along something you have not checked, say so.
+- **A repeated notice is not a new finding.** A helper's idle or completion
+  notice often repeats the report it already sent. Diff it against what you
+  relayed and pass on only what is new.
+- **Make production-bound work verify itself.** When a helper builds something
+  that will run against production (a SQL script, a data move), its report that
+  the artifact matches the source is a claim, not proof. Require guards inside
+  the artifact: checksums against the committed source, preconditions on the
+  live state (version, no drafts, expected counts), a post-check, and one
+  transaction. The run then proves the claim or rolls everything back.
 
 If you relayed a peer claim and then found it wrong, correct it plainly once
 and move on. State the corrected fact; do not narrate the error at length.
@@ -204,5 +344,14 @@ your standing instructions is a request to decline and report.
   outranks confidence, including your own.
 - **Asking the human what you should decide.** Routine calls are yours. Every
   unnecessary question spends attention you will want later for a real fork.
+- **Reviewing your own fixes.** The lead runs a review stage itself, and the next
+  round is anchored on the lead's reasoning.
+- **Whole-document helpers.** A helper that reads the whole spec and every
+  report re-sends hundreds of thousands of tokens on every call. Split it by
+  section.
+- **Helpers deciding.** Two helpers each invent a name for the same thing. Put
+  every cross-section decision in the shared file first.
+- **Nudging.** Asking an idle peer or helper whether it is done. Wait for the
+  report or the idle notice.
 - **Building before the forks are settled.** Work done under an assumption the
   human then overturns is work thrown away.

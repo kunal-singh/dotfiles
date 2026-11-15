@@ -2,12 +2,12 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "cleanupPeriodDays": 90,
   "env": {
-    "DISABLE_ERROR_REPORTING": "1",
-    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "BASH_DEFAULT_TIMEOUT_MS": "30000",
-    "MCP_TIMEOUT": "10000",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
     "EDITOR": "zed --wait",
-    "ENABLE_LSP_TOOL": "1"
+    "ENABLE_LSP_TOOL": "1",
+    "MCP_TIMEOUT": "10000"
   },
   "attribution": {},
   "permissions": {
@@ -28,7 +28,42 @@
       "Read(~/.aws/**)"
     ]
   },
+  "model": "fable",
   "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status waiting"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/scripts/hooks/post-edit-quality-gate.js"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/hooks/post-write-shellcheck.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status working"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "WebSearch",
@@ -63,48 +98,25 @@
             "command": "bash ~/.claude/scripts/hooks/pre-bash-warn-long-running.sh"
           }
         ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/scripts/hooks/post-edit-quality-gate.js"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/hooks/post-write-shellcheck.sh"
-          }
-        ]
       },
       {
+        "matcher": "Agent|SendMessage",
         "hooks": [
           {
             "type": "command",
-            "command": "workmux set-window-status working"
+            "command": "python3 -I ~/.claude/skills/peer-workflow/scripts/token-guard.py",
+            "timeout": 10
           }
         ]
       }
     ],
-    "UserPromptSubmit": [
+    "SessionStart": [
       {
+        "matcher": "startup|resume|clear|fork",
         "hooks": [
           {
             "type": "command",
-            "command": "workmux set-window-status working"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "workmux set-window-status waiting"
+            "command": "workmux register-agent"
           }
         ]
       }
@@ -118,6 +130,36 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "workmux set-window-status working"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I ~/.claude/skills/peer-workflow/scripts/token-guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I ~/.claude/skills/peer-workflow/scripts/token-guard.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -125,41 +167,50 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
+    "architect@kunal-singh-plugins": false,
+    "code-review@claude-plugins-official": false,
+    "code-simplifier@claude-plugins-official": false,
+    "context-manager@kunal-singh-plugins": true,
+    "developer@kunal-singh-plugins": false,
+    "document-skills@anthropic-agent-skills": true,
+    "explanatory-output-style@claude-plugins-official": false,
+    "feature-dev@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": false,
     "hookify@claude-plugins-official": false,
     "plugin-dev@claude-plugins-official": false,
-    "typescript-lsp@claude-plugins-official": false,
-    "pyright-lsp@claude-plugins-official": false,
-    "tmux-capture@kunal-singh-plugins": true,
-    "security-guidance@claude-plugins-official": false,
-    "ralph-loop@claude-plugins-official": false,
+    "ponytail@ponytail": true,
     "pr-review-toolkit@claude-plugins-official": false,
-    "code-simplifier@claude-plugins-official": false,
-    "feature-dev@claude-plugins-official": false,
-    "explanatory-output-style@claude-plugins-official": false,
-    "code-review@claude-plugins-official": false,
-    "context-manager@kunal-singh-plugins": true,
-    "workflow@kunal-singh-plugins": false,
     "product-manager@kunal-singh-plugins": false,
-    "architect@kunal-singh-plugins": false,
-    "developer@kunal-singh-plugins": false,
-    "frontend-design@claude-plugins-official": false,
-    "document-skills@anthropic-agent-skills": true,
+    "pyright-lsp@claude-plugins-official": false,
+    "ralph-loop@claude-plugins-official": false,
+    "security-guidance@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": true,
     "style-guide@kunal-singh-plugins": true,
     "superpowers@superpowers-marketplace": true,
-    "skill-creator@claude-plugins-official": true,
-    "ponytail@ponytail": true
+    "tmux-capture@kunal-singh-plugins": true,
+    "typescript-lsp@claude-plugins-official": false,
+    "workflow@kunal-singh-plugins": false,
+    "diagram-design@diagram-design": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "egm@egm": true
   },
   "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/skills.git"
+      }
+    },
     "kunal-singh-plugins": {
       "source": {
         "source": "github",
         "repo": "kunal-singh/claude-code-plugins"
       }
     },
-    "anthropic-agent-skills": {
+    "ponytail": {
       "source": {
-        "source": "git",
-        "url": "https://github.com/anthropics/skills.git"
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
       }
     },
     "superpowers-marketplace": {
@@ -168,16 +219,27 @@
         "repo": "obra/superpowers-marketplace"
       }
     },
-    "ponytail": {
+    "diagram-design": {
       "source": {
         "source": "github",
-        "repo": "DietrichGebert/ponytail"
+        "repo": "cathrynlavery/diagram-design"
+      }
+    },
+    "egm": {
+      "source": {
+        "source": "github",
+        "repo": "google/elephant-goldfish-model"
       }
     }
   },
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": false,
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "skipWorkflowUsageWarning": true,
   "theme": "dark"
 }

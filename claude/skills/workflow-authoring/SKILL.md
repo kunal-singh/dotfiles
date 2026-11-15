@@ -197,6 +197,36 @@ the gate once, after the workflow lands. Tell agents this explicitly or they'll 
 Scope the gate to what changed (per-package typecheck, not workspace-wide) — a repo-wide gate
 in a codebase with a pre-existing error backlog produces noise, not signal.
 
+## Acceptance checks are code too — prove each one fails
+
+Per-unit acceptance commands (an `rg`, a `sort | tail`, a SQL count) get written fast and then
+trusted blindly. Two in one plan were wrong, and both would have failed a correct unit:
+- "the newest migration is the drop" used `ls | sort | tail -1`, and `migration_lock.toml` sorts
+  after every migration folder;
+- "no DROP of an `integration_*` table" was a substring regex, which also matched
+  `social_integration_channels`, a table that unit dropped on purpose.
+
+Before the run, point each check at one input that must pass and one that must fail, and watch
+it flip. Give checks dummy config values rather than sourcing a real env file, so no check ever
+needs a secret to run.
+
+## Two sides of a contract are one unit, or a sequence with the gate between
+
+Units that touch different files can still be coupled through a contract check. One unit
+deleted a capability's server code and a later unit deleted its row in the shared route table.
+Between them the server's startup parity check threw, because the table listed a route nobody
+mounted, and the build failed. Put both sides of a contract change in one unit, or order them
+explicitly and run the gate after each, so the break shows on the unit that caused it.
+
+## Brief agents on the host's guardrails
+
+Hooks and the permission classifier block by command text, not intent. In one setup, any Bash
+command containing `DROP TABLE`, `rm`, `npm` or `find` was refused, and running a script with a
+secrets file was blocked. An agent that does not know retries variants and burns its run. Name
+the known blocks in the brief together with the sanctioned route (the Write tool for text that
+contains a blocked word, `trash` for deletes, `fd`/`rg`, the repo's package manager), and tell
+agents to report a denial rather than work around it.
+
 ## Concurrency is not a cost lever
 
 Lowering the concurrency cap does **not** reduce token spend — the same agents run, just queued
@@ -245,5 +275,8 @@ place means a fix lands once and gets copied forward into every script that foll
 - [ ] Research policy in the prompt for unverified third-party APIs
 - [ ] Verify stages have specific checklists, not vague mandates
 - [ ] Agents told NOT to run install / typecheck / build
+- [ ] Every acceptance check proven against a must-pass and a must-fail input
+- [ ] Both sides of a contract change in one unit, or sequenced with the gate after each
+- [ ] Briefs name the host's hook/classifier blocks and the sanctioned alternatives
 - [ ] A plan for the ~20-minute health check — via the completion notification, NOT a
       foreground `sleep` loop that can interrupt the agents you're checking on
